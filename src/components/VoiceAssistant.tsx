@@ -130,10 +130,24 @@ const VoiceAssistant = ({ language }: VoiceAssistantProps) => {
         throw new Error('No response received from AI');
       }
 
-      setResponse(aiResponse);
+      let textToDisplay = aiResponse;
+      let textToSpeak = aiResponse;
+
+      if (language === 'telugu' && typeof aiResponse === 'string' && aiResponse.includes('{')) {
+        try {
+          const parsedResponse = JSON.parse(aiResponse);
+          textToDisplay = parsedResponse.telugu_response;
+          textToSpeak = parsedResponse.phonetic_response;
+        } catch (e) {
+          console.error("Failed to parse Telugu AI response:", e);
+          // Fallback to the original response
+        }
+      }
+
+      setResponse(textToDisplay);
       
       // Auto-play response with improved Telugu/Hindi support
-      speakResponse(aiResponse);
+      speakResponse(textToSpeak);
       
     } catch (error) {
       console.error('Error processing with Gemini:', error);
@@ -167,8 +181,8 @@ const VoiceAssistant = ({ language }: VoiceAssistantProps) => {
       let langCode = 'en-US';
       let voiceLabel = '';
       if (language === 'telugu') {
-        langCode = 'te-IN';
-        voiceLabel = 'telugu';
+        // Use English voice for phonetic Telugu
+        langCode = 'en-US';
       } else if (language === 'hindi') {
         langCode = 'hi-IN';
         voiceLabel = 'hindi';

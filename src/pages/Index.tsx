@@ -803,295 +803,278 @@ export default function Index() {
             </div>
           </div>
         </header>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            variants={fadeInOut}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="min-h-screen"
-          >
-            <div className={gradientBg + ' ' + fontClass} style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
-              {/* Header */}
-              <div className="flex justify-between items-center mb-10 mt-8 px-6 relative">
-                <h1 className="text-5xl font-extrabold text-gray-900 drop-shadow-lg tracking-tight" style={{letterSpacing: '-0.01em'}}>{t.greeting}</h1>
-              </div>
 
-              {/* Main Content: Dashboard or Feature */}
-              {activeFeature === null && (
-                <div className="max-w-5xl mx-auto w-full flex flex-col gap-10 px-4 md:px-0">
-                  {/* Move Action Cards Row to Top */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-                    <motion.div
-                      variants={slideUp}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className={`${cardClass} bg-gradient-to-br from-blue-100/80 to-blue-400/80 text-blue-900 flex flex-col items-center active:scale-95`}
-                      onClick={() => handleCardClick('voice')}
-                      style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.10)' }}
-                    >
-                      <div className="text-5xl mb-3">🎤</div>
-                      <div className="font-extrabold text-2xl mb-1">{t.voiceAssistant}</div>
-                      <div className="text-base font-medium opacity-80">{t.voiceDesc}</div>
-                    </motion.div>
-                    <motion.div
-                      variants={slideUp}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className={`${cardClass} bg-gradient-to-br from-green-100/80 to-green-400/80 text-green-900 flex flex-col items-center active:scale-95`}
-                      onClick={() => handleCardClick('image')}
-                      style={{ boxShadow: '0 8px 32px 0 rgba(31, 135, 38, 0.10)' }}
-                    >
-                      <div className="text-5xl mb-3">📷</div>
-                      <div className="font-extrabold text-2xl mb-1">{t.diseaseDetection}</div>
-                      <div className="text-base font-medium opacity-80">{t.diseaseDesc}</div>
-                    </motion.div>
-                    <motion.div
-                      variants={slideUp}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className={`${cardClass} bg-gradient-to-br from-purple-100/80 to-purple-400/80 text-purple-900 flex flex-col items-center active:scale-95`}
-                      onClick={() => handleCardClick('video')}
-                      style={{ boxShadow: '0 8px 32px 0 rgba(135, 31, 135, 0.10)' }}
-                    >
-                      <div className="text-5xl mb-3">🎥</div>
-                      <div className="font-extrabold text-2xl mb-1">{t.expertCall}</div>
-                      <div className="text-base font-medium opacity-80">{t.expertDesc}</div>
-                    </motion.div>
-                  </div>
-                  {/* Move Weather and Crop Stats Cards Row to Bottom */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-                    {/* Weather Card */}
-                    <motion.div
-                      variants={slideUp}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className={`${cardClass} bg-gradient-to-br from-blue-100/80 to-blue-300/60 text-blue-900 relative`}
-                    >
-                      <div className="absolute top-4 right-4 flex gap-2">
-                        <button
-                          className="bg-white/70 hover:bg-white/90 rounded-full p-2 shadow border border-blue-100 transition-all"
-                          title="Refresh Weather"
-                          onClick={handleRefresh}
-                          disabled={weatherLoading}
-                        >
-                          <RefreshCw className={`w-5 h-5 ${weatherLoading ? 'animate-spin' : ''}`} />
-                        </button>
-                        <button
-                          className="bg-white/70 hover:bg-white/90 rounded-full p-2 shadow border border-blue-100 transition-all"
-                          title="Change Location"
-                          onClick={() => { setShowCityInput(v => !v); setTimeout(() => cityInputRef.current?.focus(), 100); }}
-                          disabled={weatherLoading}
-                        >
-                          <MapPin className="w-5 h-5" />
-                        </button>
-                      </div>
-                      <div>
-                        <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">🌤️ {t.weather}</h2>
-                        {showCityInput && (
-                          <form
-                            className="flex gap-2 mb-2"
-                            onSubmit={e => { e.preventDefault(); if (cityInputRef.current?.value) fetchWeatherByCity(cityInputRef.current.value); }}
-                          >
-                            <input
-                              ref={cityInputRef}
-                              type="text"
-                              placeholder="Enter city name"
-                              className="rounded-xl px-3 py-1 border border-blue-200 focus:ring-2 focus:ring-blue-300 outline-none text-base"
-                              disabled={weatherLoading}
-                            />
-                            <button
-                              type="submit"
-                              className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl px-4 py-1 font-semibold"
-                              disabled={weatherLoading}
-                            >Go</button>
-                          </form>
-                        )}
-                        {weatherLoading ? (
-                          <div className="flex items-center gap-2 text-lg animate-pulse"><span className="w-8 h-8 rounded-full bg-blue-200 animate-pulse"></span> Loading...</div>
-                        ) : weatherError ? (
-                          <div className="text-red-500">{weatherError}</div>
-                        ) : weather ? (
-                          <>
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-blue-600">📍</span>
-                              <span className="font-semibold text-base">{weather.name}{weather.sys && weather.sys.country ? `, ${weather.sys.country}` : ''}</span>
-                            </div>
-                            <div className="text-5xl font-extrabold">{Math.round(weather.main.temp)}°C</div>
-                            <div className="text-lg font-medium capitalize">{weather.weather[0].description}</div>
-                            {/* Forecast for next 2 days */}
-                            {forecast.length > 0 && (
-                              <div className="mt-4">
-                                <div className="font-semibold mb-1">Next 2 Days Forecast:</div>
-                                <div className="flex gap-4">
-                                  {forecast.map(day => (
-                                    <div key={day.date} className="flex flex-col items-center bg-blue-50/80 rounded-xl px-3 py-2 shadow border border-blue-100 min-w-[90px]">
-                                      <span className="text-sm font-medium">{new Date(day.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
-                                      <img src={`https://openweathermap.org/img/wn/${day.icon}@2x.png`} alt={day.description} className="w-10 h-10" />
-                                      <span className="text-lg font-bold">{day.avgTemp}°C</span>
-                                      <span className="text-xs capitalize text-blue-700">{day.description}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </>
-                        ) : null}
-                      </div>
-                      <div className="mt-6 flex justify-between text-base font-medium">
-                        {weather && !weatherLoading && !weatherError ? (
-                          <>
-                            <span>💧 {t.humidity}: {weather.main.humidity}%</span>
-                            <span>💨 {t.wind}: {Math.round(weather.wind.speed)} km/h</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>💧 {t.humidity}: --</span>
-                            <span>💨 {t.wind}: --</span>
-                          </>
-                        )}
-                      </div>
-                    </motion.div>
-                    {/* Crop Stats Card */}
-                    <motion.div
-                      variants={slideUp}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className={`${cardClass} bg-gradient-to-br from-green-100/80 to-green-300/60 text-green-900`}
-                    >
-                      <h2 className="text-2xl font-bold mb-2 flex items-center gap-2"> {t.cropStats}</h2>
-                      <div className="mb-4">
-                        <label className="block mb-2 font-medium">Select State:</label>
-                        <div className="relative">
-                          <select
-                            className="rounded-xl px-4 py-2 border border-green-200 focus:ring-2 focus:ring-green-300 outline-none text-base appearance-none pr-10 w-full text-green-900 font-semibold"
-                            value={selectedState}
-                            onChange={e => setSelectedState(e.target.value)}
-                          >
-                            {stateList.map(state => (
-                              <option key={state} value={state}>{state}</option>
-                            ))}
-                          </select>
-                          <span className="pointer-events-none absolute right-4 top-1/2 transform -translate-y-1/2 text-green-700">
-                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mb-4 bg-green-50/80 rounded-2xl p-6 shadow-sm border border-green-100">
-                        <div className="font-extrabold text-xl mb-2 text-green-900">{t.rice}</div>
-                        <div className="grid grid-cols-2 gap-y-2 gap-x-6 text-base">
-                          <div className="text-green-800 font-medium">{t.avgYield}</div>
-                          <div className="text-green-900 font-semibold">{cropLoading ? 'Loading...' : cropError ? 'N/A' : cropPrices.rice ? `${(cropPrices.rice.yield/100).toFixed(2)} tons/ha` : 'N/A'}</div>
-                          <div className="text-green-800 font-medium">{t.production}</div>
-                          <div className="text-green-900 font-semibold">{cropLoading ? 'Loading...' : cropError ? 'N/A' : cropPrices.rice ? `${(cropPrices.rice.production/1000000).toFixed(1)} million t` : 'N/A'}</div>
-                        </div>
-                        <div className="text-xs text-right text-green-700 mt-4 opacity-80">{t.source}</div>
-                      </div>
-                      <div className="bg-green-50/80 rounded-2xl p-6 shadow-sm border border-green-100">
-                        <div className="font-extrabold text-xl mb-2 text-green-900">{t.wheat}</div>
-                        <div className="grid grid-cols-2 gap-y-2 gap-x-6 text-base">
-                          <div className="text-green-800 font-medium">{t.avgYield}</div>
-                          <div className="text-green-900 font-semibold">{cropLoading ? 'Loading...' : cropError ? 'N/A' : cropPrices.wheat ? `${(cropPrices.wheat.yield/100).toFixed(2)} tons/ha` : 'N/A'}</div>
-                          <div className="text-green-800 font-medium">{t.production}</div>
-                          <div className="text-green-900 font-semibold">{cropLoading ? 'Loading...' : cropError ? 'N/A' : cropPrices.wheat ? `${(cropPrices.wheat.production/1000000).toFixed(1)} million t` : 'N/A'}</div>
-                        </div>
-                        <div className="text-xs text-right text-green-700 mt-4 opacity-80">{t.source}</div>
-                      </div>
-                    </motion.div>
-                    {/* Loan Estimator Card: Make full width */}
-                    <div className="w-full mt-8">
-                      <LoanEstimatorCard />
-                    </div>
-                    {/* Animated Bar Chart: Rice & Wheat Production by State */}
-                    <motion.div
-                      variants={slideUp}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="md:col-span-2 rounded-3xl shadow-2xl border border-green-200 bg-gradient-to-br from-green-50/80 via-white/90 to-green-100/80 p-8 relative overflow-hidden w-full"
-                    >
-                      <h3 className="text-3xl font-extrabold mb-2 text-green-900 tracking-tight text-center drop-shadow-lg">🌾 Statewise Production Comparison</h3>
-                      <div className="flex justify-center mb-4">
-                        <Legend layout="horizontal" align="center" iconType="rect" wrapperStyle={{ fontSize: '1.1rem', fontWeight: 600, color: '#166534' }} />
-                      </div>
-                      <div className="w-full overflow-x-auto">
-                        <div style={{ minWidth: 900 }}>
-                          <ResponsiveContainer width="100%" height={380}>
-                            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 60 }} barGap={8}>
-                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                              <XAxis
-                                dataKey="state"
-                                interval={0}
-                                height={80}
-                                tick={props => (
-                                  <text
-                                    x={props.x}
-                                    y={props.y}
-                                    dy={16}
-                                    textAnchor="end"
-                                    transform={`rotate(-30,${props.x},${props.y})`}
-                                    fill="#166534"
-                                    fontSize={14}
-                                    fontWeight={500}
-                                  >
-                                    {props.payload.value}
-                                  </text>
-                                )}
-                              />
-                              <YAxis label={{ value: 'Production (million t)', angle: -90, position: 'insideLeft', fontSize: 16, fontWeight: 600, fill: '#166534' }} tick={{ fontSize: 16, fontWeight: 500, fill: '#166534' }} axisLine={false} />
-                              <Tooltip contentStyle={{ borderRadius: 12, fontSize: 16, background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }} formatter={(value) => value === 0 ? 'N/A' : value} />
-                              <Bar dataKey="Rice" fill="#38bdf8" radius={[8, 8, 0, 0]} isAnimationActive>
-                                <LabelList dataKey="Rice" position="top" formatter={v => v === 0 ? '' : v} style={{ fontWeight: 700, fill: '#0ea5e9', fontSize: 14 }} />
-                              </Bar>
-                              <Bar dataKey="Wheat" fill="#22c55e" radius={[8, 8, 0, 0]} isAnimationActive>
-                                <LabelList dataKey="Wheat" position="top" formatter={v => v === 0 ? '' : v} style={{ fontWeight: 700, fill: '#16a34a', fontSize: 14 }} />
-                              </Bar>
-                            </BarChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-                      <div className="text-xs text-right text-green-700 mt-4 opacity-80">{t.source}</div>
-                      {/* Optional: faint background icon for extra flair */}
-                      <svg className="absolute -bottom-8 -right-8 opacity-10" width="120" height="120" viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="60" fill="#22c55e" /></svg>
-                    </motion.div>
-                  </div>
-                </div>
-              )}
-
-              {/* Feature Views */}
-              {activeFeature === 'voice' && (
-                <div className="max-w-2xl mx-auto px-4">
-                  <button
-                    onClick={handleBack}
-                    className="mb-8 bg-white/90 px-6 py-2 rounded-full shadow text-gray-700 hover:bg-white/95 font-semibold text-lg border border-white/40 transition-all duration-200"
-                  >
-                    ← {t.home}
-                  </button>
-                  <VoiceAssistant language={language} />
-                </div>
-              )}
-              {activeFeature === 'image' && (
-                <div className="max-w-2xl mx-auto px-4">
-                  <button
-                    onClick={handleBack}
-                    className="mb-8 bg-white/90 px-6 py-2 rounded-full shadow text-gray-700 hover:bg-white/95 font-semibold text-lg border border-white/40 transition-all duration-200"
-                  >
-                    ← {t.home}
-                  </button>
-                  <ImageAnalysis language={language} />
-                </div>
-              )}
-              {/* AI Video Call Modal (Expert Call) */}
-              <AIVideoCallModal isOpen={isAIVideoModalOpen} onClose={handleCloseAIVideoModal} language={language} />
+        {/* Main Content: Dashboard or Feature */}
+        {activeFeature === null && (
+          <div className="max-w-5xl mx-auto w-full flex flex-col gap-10 px-4 md:px-0">
+            {/* Move Action Cards Row to Top */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+              <motion.div
+                variants={slideUp}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className={`${cardClass} bg-gradient-to-br from-blue-100/80 to-blue-400/80 text-blue-900 flex flex-col items-center active:scale-95`}
+                onClick={() => handleCardClick('voice')}
+                style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.10)' }}
+              >
+                <div className="text-5xl mb-3">🎤</div>
+                <div className="font-extrabold text-2xl mb-1">{t.voiceAssistant}</div>
+                <div className="text-base font-medium opacity-80">{t.voiceDesc}</div>
+              </motion.div>
+              <motion.div
+                variants={slideUp}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className={`${cardClass} bg-gradient-to-br from-green-100/80 to-green-400/80 text-green-900 flex flex-col items-center active:scale-95`}
+                onClick={() => handleCardClick('image')}
+                style={{ boxShadow: '0 8px 32px 0 rgba(31, 135, 38, 0.10)' }}
+              >
+                <div className="text-5xl mb-3">📷</div>
+                <div className="font-extrabold text-2xl mb-1">{t.diseaseDetection}</div>
+                <div className="text-base font-medium opacity-80">{t.diseaseDesc}</div>
+              </motion.div>
+              <motion.div
+                variants={slideUp}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className={`${cardClass} bg-gradient-to-br from-purple-100/80 to-purple-400/80 text-purple-900 flex flex-col items-center active:scale-95`}
+                onClick={() => handleCardClick('video')}
+                style={{ boxShadow: '0 8px 32px 0 rgba(135, 31, 135, 0.10)' }}
+              >
+                <div className="text-5xl mb-3">🎥</div>
+                <div className="font-extrabold text-2xl mb-1">{t.expertCall}</div>
+                <div className="text-base font-medium opacity-80">{t.expertDesc}</div>
+              </motion.div>
             </div>
-          </motion.div>
-        </AnimatePresence>
+            {/* Move Weather and Crop Stats Cards Row to Bottom */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+              {/* Weather Card */}
+              <motion.div
+                variants={slideUp}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className={`${cardClass} bg-gradient-to-br from-blue-100/80 to-blue-300/60 text-blue-900 relative`}
+              >
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <button
+                    className="bg-white/70 hover:bg-white/90 rounded-full p-2 shadow border border-blue-100 transition-all"
+                    title="Refresh Weather"
+                    onClick={handleRefresh}
+                    disabled={weatherLoading}
+                  >
+                    <RefreshCw className={`w-5 h-5 ${weatherLoading ? 'animate-spin' : ''}`} />
+                  </button>
+                  <button
+                    className="bg-white/70 hover:bg-white/90 rounded-full p-2 shadow border border-blue-100 transition-all"
+                    title="Change Location"
+                    onClick={() => { setShowCityInput(v => !v); setTimeout(() => cityInputRef.current?.focus(), 100); }}
+                    disabled={weatherLoading}
+                  >
+                    <MapPin className="w-5 h-5" />
+                  </button>
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">🌤️ {t.weather}</h2>
+                  {showCityInput && (
+                    <form
+                      className="flex gap-2 mb-2"
+                      onSubmit={e => { e.preventDefault(); if (cityInputRef.current?.value) fetchWeatherByCity(cityInputRef.current.value); }}
+                    >
+                      <input
+                        ref={cityInputRef}
+                        type="text"
+                        placeholder="Enter city name"
+                        className="rounded-xl px-3 py-1 border border-blue-200 focus:ring-2 focus:ring-blue-300 outline-none text-base"
+                        disabled={weatherLoading}
+                      />
+                      <button
+                        type="submit"
+                        className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl px-4 py-1 font-semibold"
+                        disabled={weatherLoading}
+                      >Go</button>
+                    </form>
+                  )}
+                  {weatherLoading ? (
+                    <div className="flex items-center gap-2 text-lg animate-pulse"><span className="w-8 h-8 rounded-full bg-blue-200 animate-pulse"></span> Loading...</div>
+                  ) : weatherError ? (
+                    <div className="text-red-500">{weatherError}</div>
+                  ) : weather ? (
+                    <>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-blue-600">📍</span>
+                        <span className="font-semibold text-base">{weather.name}{weather.sys && weather.sys.country ? `, ${weather.sys.country}` : ''}</span>
+                      </div>
+                      <div className="text-5xl font-extrabold">{Math.round(weather.main.temp)}°C</div>
+                      <div className="text-lg font-medium capitalize">{weather.weather[0].description}</div>
+                      {/* Forecast for next 2 days */}
+                      {forecast.length > 0 && (
+                        <div className="mt-4">
+                          <div className="font-semibold mb-1">Next 2 Days Forecast:</div>
+                          <div className="flex gap-4">
+                            {forecast.map(day => (
+                              <div key={day.date} className="flex flex-col items-center bg-blue-50/80 rounded-xl px-3 py-2 shadow border border-blue-100 min-w-[90px]">
+                                <span className="text-sm font-medium">{new Date(day.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                                <img src={`https://openweathermap.org/img/wn/${day.icon}@2x.png`} alt={day.description} className="w-10 h-10" />
+                                <span className="text-lg font-bold">{day.avgTemp}°C</span>
+                                <span className="text-xs capitalize text-blue-700">{day.description}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : null}
+                </div>
+                <div className="mt-6 flex justify-between text-base font-medium">
+                  {weather && !weatherLoading && !weatherError ? (
+                    <>
+                      <span>💧 {t.humidity}: {weather.main.humidity}%</span>
+                      <span>💨 {t.wind}: {Math.round(weather.wind.speed)} km/h</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>💧 {t.humidity}: --</span>
+                      <span>💨 {t.wind}: --</span>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+              {/* Crop Stats Card */}
+              <motion.div
+                variants={slideUp}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className={`${cardClass} bg-gradient-to-br from-green-100/80 to-green-300/60 text-green-900`}
+              >
+                <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">🌾 {t.cropStats}</h2>
+                <div className="mb-4">
+                  <label className="block mb-2 font-medium">Select State:</label>
+                  <div className="relative">
+                    <select
+                      className="rounded-xl px-4 py-2 border border-green-200 focus:ring-2 focus:ring-green-300 outline-none text-base appearance-none pr-10 w-full text-green-900 font-semibold"
+                      value={selectedState}
+                      onChange={e => setSelectedState(e.target.value)}
+                    >
+                      {stateList.map(state => (
+                        <option key={state} value={state}>{state}</option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-4 top-1/2 transform -translate-y-1/2 text-green-700">
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                  </div>
+                </div>
+                <div className="mb-4 bg-green-50/80 rounded-2xl p-6 shadow-sm border border-green-100">
+                  <div className="font-extrabold text-xl mb-2 text-green-900">{t.rice}</div>
+                  <div className="grid grid-cols-2 gap-y-2 gap-x-6 text-base">
+                    <div className="text-green-800 font-medium">{t.avgYield}</div>
+                    <div className="text-green-900 font-semibold">{cropLoading ? 'Loading...' : cropError ? 'N/A' : cropPrices.rice ? `${(cropPrices.rice.yield/100).toFixed(2)} tons/ha` : 'N/A'}</div>
+                    <div className="text-green-800 font-medium">{t.production}</div>
+                    <div className="text-green-900 font-semibold">{cropLoading ? 'Loading...' : cropError ? 'N/A' : cropPrices.rice ? `${(cropPrices.rice.production/1000000).toFixed(1)} million t` : 'N/A'}</div>
+                  </div>
+                  <div className="text-xs text-right text-green-700 mt-4 opacity-80">{t.source}</div>
+                </div>
+                <div className="bg-green-50/80 rounded-2xl p-6 shadow-sm border border-green-100">
+                  <div className="font-extrabold text-xl mb-2 text-green-900">{t.wheat}</div>
+                  <div className="grid grid-cols-2 gap-y-2 gap-x-6 text-base">
+                    <div className="text-green-800 font-medium">{t.avgYield}</div>
+                    <div className="text-green-900 font-semibold">{cropLoading ? 'Loading...' : cropError ? 'N/A' : cropPrices.wheat ? `${(cropPrices.wheat.yield/100).toFixed(2)} tons/ha` : 'N/A'}</div>
+                    <div className="text-green-800 font-medium">{t.production}</div>
+                    <div className="text-green-900 font-semibold">{cropLoading ? 'Loading...' : cropError ? 'N/A' : cropPrices.wheat ? `${(cropPrices.wheat.production/1000000).toFixed(1)} million t` : 'N/A'}</div>
+                  </div>
+                  <div className="text-xs text-right text-green-700 mt-4 opacity-80">{t.source}</div>
+                </div>
+              </motion.div>
+              {/* Loan Estimator Card: Make full width */}
+              <div className="w-full mt-8">
+                <LoanEstimatorCard />
+              </div>
+              {/* Animated Bar Chart: Rice & Wheat Production by State */}
+              <motion.div
+                variants={slideUp}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="md:col-span-2 rounded-3xl shadow-2xl border border-green-200 bg-gradient-to-br from-green-50/80 via-white/90 to-green-100/80 p-8 relative overflow-hidden w-full"
+              >
+                <h3 className="text-3xl font-extrabold mb-2 text-green-900 tracking-tight text-center drop-shadow-lg">🌾 Statewise Production Comparison</h3>
+                <div className="flex justify-center mb-4">
+                  <Legend layout="horizontal" align="center" iconType="rect" wrapperStyle={{ fontSize: '1.1rem', fontWeight: 600, color: '#166534' }} />
+                </div>
+                <div className="w-full overflow-x-auto">
+                  <div style={{ minWidth: 900 }}>
+                    <ResponsiveContainer width="100%" height={380}>
+                      <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 60 }} barGap={8}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis
+                          dataKey="state"
+                          interval={0}
+                          height={80}
+                          tick={props => (
+                            <text
+                              x={props.x}
+                              y={props.y}
+                              dy={16}
+                              textAnchor="end"
+                              transform={`rotate(-30,${props.x},${props.y})`}
+                              fill="#166534"
+                              fontSize={14}
+                              fontWeight={500}
+                            >
+                              {props.payload.value}
+                            </text>
+                          )}
+                        />
+                        <YAxis label={{ value: 'Production (million t)', angle: -90, position: 'insideLeft', fontSize: 16, fontWeight: 600, fill: '#166534' }} tick={{ fontSize: 16, fontWeight: 500, fill: '#166534' }} axisLine={false} />
+                        <Tooltip contentStyle={{ borderRadius: 12, fontSize: 16, background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }} formatter={(value) => value === 0 ? 'N/A' : value} />
+                        <Bar dataKey="Rice" fill="#38bdf8" radius={[8, 8, 0, 0]} isAnimationActive>
+                          <LabelList dataKey="Rice" position="top" formatter={v => v === 0 ? '' : v} style={{ fontWeight: 700, fill: '#0ea5e9', fontSize: 14 }} />
+                        </Bar>
+                        <Bar dataKey="Wheat" fill="#22c55e" radius={[8, 8, 0, 0]} isAnimationActive>
+                          <LabelList dataKey="Wheat" position="top" formatter={v => v === 0 ? '' : v} style={{ fontWeight: 700, fill: '#16a34a', fontSize: 14 }} />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+                <div className="text-xs text-right text-green-700 mt-4 opacity-80">{t.source}</div>
+                {/* Optional: faint background icon for extra flair */}
+                <svg className="absolute -bottom-8 -right-8 opacity-10" width="120" height="120" viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="60" fill="#22c55e" /></svg>
+              </motion.div>
+            </div>
+          </div>
+        )}
+
+        {/* Feature Views */}
+        {activeFeature === 'voice' && (
+          <div className="max-w-2xl mx-auto px-4">
+            <button
+              onClick={handleBack}
+              className="mb-8 bg-white/90 px-6 py-2 rounded-full shadow text-gray-700 hover:bg-white/95 font-semibold text-lg border border-white/40 transition-all duration-200"
+            >
+              ← {t.home}
+            </button>
+            <VoiceAssistant language={language} />
+          </div>
+        )}
+        {activeFeature === 'image' && (
+          <div className="max-w-2xl mx-auto px-4">
+            <button
+              onClick={handleBack}
+              className="mb-8 bg-white/90 px-6 py-2 rounded-full shadow text-gray-700 hover:bg-white/95 font-semibold text-lg border border-white/40 transition-all duration-200"
+            >
+              ← {t.home}
+            </button>
+            <ImageAnalysis language={language} />
+          </div>
+        )}
+        {/* AI Video Call Modal (Expert Call) */}
+        <AIVideoCallModal isOpen={isAIVideoModalOpen} onClose={handleCloseAIVideoModal} language={language} />
       </div>
     </div>
   );
